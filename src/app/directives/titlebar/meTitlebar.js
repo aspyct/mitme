@@ -14,14 +14,13 @@
         .directive("meTitlebarButtonBack", function () {
             return {
                 restrict: "E",
-                transclude: true,
-                scope: {
-                    text: "@"
-                },
-                link: function (scope) {
-                    scope.text = "Back";
-                },
                 templateUrl: "app/directives/titlebar/me-titlebar-button-back.html"
+            };
+        })
+        .directive("meTitlebarButtonCancel", function () {
+            return {
+                restrict: "E",
+                templateUrl: "app/directives/titlebar/me-titlebar-button-cancel.html"
             };
         })
         .directive("meTitlebarButtonMessage", function () {
