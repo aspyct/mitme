@@ -15,7 +15,7 @@
                     templateUrl: "app/pages/login/login.html"
                 })
                 .otherwise({
-                    redirectTo: "/"
+                    redirectTo: "/login"
                 });
         });
 }());

@@ -1,3 +1,4 @@
+/*jslint plusplus:true */
 /*globals angular, FirebaseSimpleLogin */
 
 (function () {
@@ -5,14 +6,54 @@
     
     angular.module("mitme.services.auth", ["mitme.services.firebase"])
         .service("auth", function (firebase) {
+            var currentUser,
+                auth,
+                listeners,
+                triggerAuthEvent,
+                userData;
+            
+            currentUser = null;
+            listeners = [];
+            userData = firebase.child("users");
+            
+            triggerAuthEvent = function () {
+                var i, func;
+                for (i = 0; i < listeners.length; ++i) {
+                    listeners[i](currentUser);
+                }
+            };
+            
+            auth = new FirebaseSimpleLogin(firebase, function (error, user) {
+                if (user) {
+                    currentUser = user;
+                } else {
+                    currentUser = null;
+                }
+                
+                triggerAuthEvent();
+            });
+            
             return {
-                login: function () {
-                    var auth = new FirebaseSimpleLogin(firebase, function (error, user) {
-                        console.log(error);
-                        console.log(user);
-                    });
-                    
+                loggedIn: function () {
+                    return currentUser !== null;
+                },
+                getCurrentUser: function () {
+                    return currentUser;
+                },
+                login: function (success, failure) {
                     auth.login("facebook");
+                },
+                addAuthListener: function (listener) {
+                    listeners.push(listener);
+                    listener(currentUser);
+                },
+                removeAuthListener: function (listener) {
+                    var position;
+                    
+                    position = listeners.indexOf(listener);
+                    if (position !== -1) {
+                        listeners.splice(position, 1);
+                    }
                 }
             };
         });

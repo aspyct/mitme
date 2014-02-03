@@ -3,4 +3,9 @@
     <me-titlebar-title>Home</me-titlebar-title>
     <me-titlebar-button-message></me-titlebar-button-message>
 </me-titlebar>
-<div>Some content, {{message}}</div>
+<div>Some content, {{inbox}}</div>
+<form>
+    <input type="text" placeholder="Your name" ng-model="userId">
+    <input type="text" placeholder="Your message" ng-model="message">
+    <button ng-click="sendMessage()">Send</button>
+</form>
