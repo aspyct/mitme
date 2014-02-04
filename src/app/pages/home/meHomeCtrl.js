@@ -3,21 +3,21 @@
 (function () {
     "use strict";
     
-    angular.module("mitme.pages.home", ["mitme.services"])
-        .controller('meHomeCtrl', function ($scope, inbox, auth) {
+    angular.module("mitme.pages.home", ["mitme.model.mitme"])
+        .controller('meHomeCtrl', function ($scope, mitme, auth) {
             auth.addAuthListener(function (user) {
                 if (user) {
-                    $scope.inbox = inbox.inboxForCurrentUser().listConversations();
+                    $scope.inbox = mitme.currentUser().inbox();
+                } else {
+                    $scope.inbox = {};
                 }
             });
             
             $scope.sendMessage = function () {
-                inbox.inboxForCurrentUser().sendMessage({id: $scope.userId}, {
+                mitme.currentUser().inbox().sendMessage({id: $scope.userId}, {
                     location: "Brussels",
                     message: $scope.message
                 });
-                
-                $scope.inbox = inbox.inboxForCurrentUser().listConversations();
             };
         });
 }());

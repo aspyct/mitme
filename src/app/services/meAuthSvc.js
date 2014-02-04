@@ -5,7 +5,7 @@
     "use strict";
     
     angular.module("mitme.services.auth", ["mitme.services.firebase"])
-        .service("auth", function (firebase) {
+        .service("auth", function ($firebaseSimpleLogin, mitmeRef) {
             var currentUser,
                 auth,
                 listeners,
@@ -14,7 +14,6 @@
             
             currentUser = null;
             listeners = [];
-            userData = firebase.child("users");
             
             triggerAuthEvent = function () {
                 var i, func;
@@ -23,7 +22,7 @@
                 }
             };
             
-            auth = new FirebaseSimpleLogin(firebase, function (error, user) {
+            auth = new FirebaseSimpleLogin(mitmeRef, function (error, user) {
                 if (user) {
                     currentUser = user;
                 } else {
@@ -35,9 +34,10 @@
             
             return {
                 loggedIn: function () {
+                    console.log(currentUser);
                     return currentUser !== null;
                 },
-                getCurrentUser: function () {
+                currentUser: function () {
                     return currentUser;
                 },
                 login: function (success, failure) {

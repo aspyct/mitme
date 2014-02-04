@@ -3,7 +3,7 @@
 (function () {
     "use strict";
     
-    angular.module("mitme", ["ngRoute", "mitme.pages", "mitme.services", "mitme.directives.titlebar"])
+    angular.module("mitme", ["ngRoute", "mitme.pages", "mitme.services", "mitme.model", "mitme.directives.titlebar"])
         .config(function ($routeProvider) {
             $routeProvider
                 .when("/", {

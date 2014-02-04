@@ -6,6 +6,29 @@
     
     angular.module("mitme.services.objc", [])
         .service("objc", function () {
+            // TODO Extract Plugin & Method to another service file
+            var Plugin,
+                Method;
+            
+            Plugin = function (name) {
+                this.name = name;
+            };
+            Plugin.prototype = {
+                method: function (name) {
+                    
+                }
+            };
+            
+            Method = function (plugin, name, async) {
+                this.plugin = plugin;
+                this.name = name;
+            };
+            Method.prototype = {
+                invoke: function (args, callback) {
+                    
+                }
+            };
+            
             return {
                 call: function (plugin, method, args, callback) {
                     var request,
