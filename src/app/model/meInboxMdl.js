@@ -14,9 +14,15 @@
             Inbox.prototype = {
                 construct: function () {
                     var self,
-                        inbox;
+                        inbox,
+                        cachedMessages;
                     
                     self = this;
+                    
+                    // The actual inbox has messages sorted by date
+                    // but I want to find stuff easily by senderId
+                    cachedMessages = {};
+                    
                     inbox = {
                         sendMessage: function (message) {
                             var $sender;
@@ -31,14 +37,15 @@
                                 }, self.user)
                             });
                         },
-                        messages: {} // TODO Should be an ordered array
+                        messages: []
                     };
                     
                     // TODO Should handle remove_child, probably...
                     self.$ref.$on("change", function (senderId) {
                         var data,
                             sensitive,
-                            message;
+                            message,
+                            cachedMessage;
                         
                         data = self.$ref[senderId];
                         sensitive = crypto.decrypt(data.message);
@@ -52,7 +59,17 @@
                             .withLocation(sensitive.location)
                             .done();
                         
-                        inbox.messages[senderId] = message;
+                        cachedMessage = cachedMessages[senderId];
+                        if (cachedMessage !== undefined) {
+                            angular.extend(cachedMessage, message);
+                        } else {
+                            cachedMessages[senderId] = message;
+                            inbox.messages.push(message);
+                        }
+                    });
+                    
+                    self.$ref.$on("loaded", function () {
+                        inbox.messages.ready = true;
                     });
                     
                     return inbox;

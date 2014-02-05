@@ -5,7 +5,7 @@
     "use strict";
     
     angular.module("mitme.services.auth", ["mitme.services.firebase"])
-        .factory("auth", function ($firebaseSimpleLogin, mitmeRef) {
+        .factory("auth", function ($firebaseSimpleLogin, $timeout, mitmeRef) {
             var currentUser,
                 auth,
                 listeners,
@@ -29,12 +29,13 @@
                     currentUser = null;
                 }
                 
-                triggerAuthEvent();
+                $timeout(function () {
+                    triggerAuthEvent();
+                });
             });
             
             return {
                 loggedIn: function () {
-                    console.log(currentUser);
                     return currentUser !== null;
                 },
                 currentUser: function () {
@@ -45,7 +46,10 @@
                 },
                 addAuthListener: function (listener) {
                     listeners.push(listener);
-                    listener(currentUser);
+                    
+                    $timeout(function () {
+                        listener(currentUser);
+                    });
                 },
                 removeAuthListener: function (listener) {
                     var position;

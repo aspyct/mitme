@@ -3,14 +3,20 @@
     <me-titlebar-title>Home</me-titlebar-title>
     <me-titlebar-button-message></me-titlebar-button-message>
 </me-titlebar>
-<ul class="message-list">
-    <li ng-repeat="message in inbox">
+<ul ng-show="messages.ready && messages.length > 0">
+    <li ng-repeat="message in messages">
         <h2>{{message.sender.name}}</h2>
         <span class="date">{{message.date}}</span>
         <span ng-if="message.location">{{message.location}}</span>
         <p>{{message.body}}</p>
     </li>
 </ul>
+<div ng-show="messages.ready && messages.length === 0">
+    No message to show at the moment.
+</div>
+<div ng-show="messages === undefined || !messages.ready">
+    Loading
+</div>
 <form>
     <input type="text" placeholder="Your id" ng-model="userId">
     <input type="text" placeholder="Your name" ng-model="userName">

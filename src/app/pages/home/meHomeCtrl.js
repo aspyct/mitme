@@ -7,9 +7,9 @@
         .controller('meHomeCtrl', function ($scope, mitme, auth, buildMessage) {
             auth.addAuthListener(function (user) {
                 if (user) {
-                    $scope.inbox = mitme.currentUser().inbox().messages;
+                    $scope.messages = mitme.currentUser().inbox().messages;
                 } else {
-                    $scope.inbox = {};
+                    $scope.messages = undefined;
                 }
             });
             
