@@ -47,7 +47,7 @@
                     this.message.date = date;
                     return this;
                 },
-                done: function () {
+                finish: function () {
                     assert.notNull(this.message.sender, "A message must have a sender");
                     assert.notNull(this.message.body, "A message must have a body");
                     

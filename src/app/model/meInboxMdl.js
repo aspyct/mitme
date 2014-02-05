@@ -49,6 +49,8 @@
                         
                         data = self.$ref[senderId];
                         sensitive = crypto.decrypt(data.message);
+                        
+                        // FIXME try/catch this, in case some data is wrong
                         message = buildMessage()
                             .fromUser({
                                 id: senderId,
@@ -57,7 +59,7 @@
                             .withBody(sensitive.body)
                             .onDate(sensitive.date)
                             .withLocation(sensitive.location)
-                            .done();
+                            .finish();
                         
                         cachedMessage = cachedMessages[senderId];
                         if (cachedMessage !== undefined) {

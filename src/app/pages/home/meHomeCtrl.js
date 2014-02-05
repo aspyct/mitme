@@ -26,7 +26,7 @@
                         longitude: 0,
                         latitude: 0
                     })
-                    .done();
+                    .finish();
                 
                 mitme.currentUser().inbox().sendMessage(message);
             };
