@@ -6,9 +6,8 @@
     var firebaseUrl = "https://mitme.firebaseio.com/";
     
     angular.module("mitme.model.mitme", ["mitme.services.firebase", "mitme.services.auth", "mitme.model.user"])
-        .service("mitme", function ($mitme, auth, users) {
-            var Mitme,
-                mitme;
+        .factory("mitme", function ($mitme, auth, users) {
+            var Mitme;
             
             Mitme = function ($ref) {
                 this.$ref = $ref;
@@ -16,24 +15,22 @@
             Mitme.prototype = {
                 construct: function () {
                     var self,
-                        object;
+                        mitme;
                     
                     self = this;
-                    object = self.$ref;
-                    
-                    object.user = function (id) {
-                        return users.userForIdIn$Mitme(id, self.$ref);
+                    mitme = {
+                        user: function (id) {
+                            return users.userForId(id, self.$ref);
+                        },
+                        currentUser: function () {
+                            return this.user(auth.currentUser().id);
+                        }
                     };
                     
-                    object.currentUser = function () {
-                        return object.user(auth.currentUser().id);
-                    };
-                    
-                    return object;
+                    return mitme;
                 }
             };
             
-            mitme = new Mitme($mitme);
-            return mitme.construct();
+            return new Mitme($mitme).construct();
         });
 }());

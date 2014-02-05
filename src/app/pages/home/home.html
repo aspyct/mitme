@@ -3,9 +3,17 @@
     <me-titlebar-title>Home</me-titlebar-title>
     <me-titlebar-button-message></me-titlebar-button-message>
 </me-titlebar>
-<div>Some content, {{inbox}}</div>
+<ul class="message-list">
+    <li ng-repeat="message in inbox">
+        <h2>{{message.sender.name}}</h2>
+        <span class="date">{{message.date}}</span>
+        <span ng-if="message.location">{{message.location}}</span>
+        <p>{{message.body}}</p>
+    </li>
+</ul>
 <form>
-    <input type="text" placeholder="Your name" ng-model="userId">
+    <input type="text" placeholder="Your id" ng-model="userId">
+    <input type="text" placeholder="Your name" ng-model="userName">
     <input type="text" placeholder="Your message" ng-model="message">
     <button ng-click="sendMessage()">Send</button>
     <span>{{auto.value}}</span>

@@ -4,20 +4,31 @@
     "use strict";
     
     angular.module("mitme.pages.home", ["mitme.model.mitme"])
-        .controller('meHomeCtrl', function ($scope, mitme, auth) {
+        .controller('meHomeCtrl', function ($scope, mitme, auth, buildMessage) {
             auth.addAuthListener(function (user) {
                 if (user) {
-                    $scope.inbox = mitme.currentUser().inbox();
+                    $scope.inbox = mitme.currentUser().inbox().messages;
                 } else {
                     $scope.inbox = {};
                 }
             });
             
             $scope.sendMessage = function () {
-                mitme.currentUser().inbox().sendMessage({id: $scope.userId}, {
-                    location: "Brussels",
-                    message: $scope.message
-                });
+                var message;
+                
+                message = buildMessage()
+                    .fromUser({
+                        name: $scope.userName,
+                        id: $scope.userId
+                    })
+                    .withBody($scope.message)
+                    .withLocation({
+                        longitude: 0,
+                        latitude: 0
+                    })
+                    .done();
+                
+                mitme.currentUser().inbox().sendMessage(message);
             };
         });
 }());

@@ -5,7 +5,7 @@
     "use strict";
     
     angular.module("mitme.services.objc", [])
-        .service("objc", function () {
+        .factory("objc", function () {
             // TODO Extract Plugin & Method to another service file
             var Plugin,
                 Method;

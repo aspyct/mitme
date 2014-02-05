@@ -4,7 +4,7 @@
     "use strict";
     
     angular.module("mitme.model.user", ["mitme.model.inbox"])
-        .service("users", function (inboxes) {
+        .factory("users", function (inboxes) {
             var User;
             
             User = function ($ref) {
@@ -13,24 +13,26 @@
             User.prototype = {
                 construct: function () {
                     var self,
-                        object;
+                        user;
                     
                     self = this;
-                    object = self.$ref.$child("data");
-                    
-                    object.inbox = function () {
-                        return inboxes.inboxFor$User(self.$ref);
+                    user = {
+                        inbox: function () {
+                            return inboxes.inboxForUser(user, self.$ref);
+                        },
+                        profile: self.$ref.$child("profile"),
+                        devices: self.$ref.$child("devices")
                     };
                     
-                    return object;
+                    return user;
                 }
             };
             
             return {
-                userForIdIn$Mitme: function (id, $mitme) {
+                userForId: function (id, $mitmeRef) {
                     var user;
                     
-                    user = new User($mitme.$child("users").$child(id));
+                    user = new User($mitmeRef.$child("users").$child(id));
                     return user.construct();
                 }
             };

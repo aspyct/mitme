@@ -3,12 +3,13 @@
 (function () {
     "use strict";
     
-    angular.module("mitme.model.inbox", ["mitme.services.crypto"])
-        .service("inboxes", function (crypto) {
+    angular.module("mitme.model.inbox", ["mitme.services.crypto", "mitme.model.message"])
+        .factory("inboxes", function (crypto, buildMessage) {
             var Inbox;
             
-            Inbox = function ($ref) {
-                this.$ref = $ref;
+            Inbox = function (user, $inboxRef) {
+                this.user = user;
+                this.$ref = $inboxRef;
             };
             Inbox.prototype = {
                 construct: function () {
@@ -16,23 +17,42 @@
                         inbox;
                     
                     self = this;
-                    inbox = {};
-                    
-                    inbox.sendMessage = function (sender, message) {
-                        var $sender;
-                        
-                        $sender = self.$ref.$child(sender.id);
-                        $sender.$set({
-                            date: new Date(),
-                            message: crypto.encrypt(message)
-                        });
+                    inbox = {
+                        sendMessage: function (message) {
+                            var $sender;
+                            
+                            $sender = self.$ref.$child(message.sender.id);
+                            $sender.$set({
+                                sender: message.sender.name,
+                                message: crypto.encrypt({
+                                    body: message.body,
+                                    date: message.date,
+                                    location: message.location
+                                }, self.user)
+                            });
+                        },
+                        messages: {} // TODO Should be an ordered array
                     };
                     
+                    // TODO Should handle remove_child, probably...
                     self.$ref.$on("change", function (senderId) {
-                        var blob;
+                        var data,
+                            sensitive,
+                            message;
                         
-                        blob = self.$ref[senderId].message;
-                        inbox[senderId] = crypto.decrypt(blob);
+                        data = self.$ref[senderId];
+                        sensitive = crypto.decrypt(data.message);
+                        message = buildMessage()
+                            .fromUser({
+                                id: senderId,
+                                name: data.sender
+                            })
+                            .withBody(sensitive.body)
+                            .onDate(sensitive.date)
+                            .withLocation(sensitive.location)
+                            .done();
+                        
+                        inbox.messages[senderId] = message;
                     });
                     
                     return inbox;
@@ -40,9 +60,10 @@
             };
             
             return {
-                inboxFor$User: function ($user) {
+                inboxForUser: function (user, $userRef) {
                     var inbox;
-                    inbox = new Inbox($user.$child("inbox"));
+                    
+                    inbox = new Inbox(user, $userRef.$child("inbox"));
                     return inbox.construct();
                 }
             };

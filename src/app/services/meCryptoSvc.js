@@ -4,7 +4,7 @@
     "use strict";
     
     angular.module("mitme.services.crypto", ["mitme.services.objc"])
-        .service("crypto", function (objc) {
+        .factory("crypto", function (objc) {
             return {
                 encrypt: function (object, key) {
                     /* Implement me, native side

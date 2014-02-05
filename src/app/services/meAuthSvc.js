@@ -5,7 +5,7 @@
     "use strict";
     
     angular.module("mitme.services.auth", ["mitme.services.firebase"])
-        .service("auth", function ($firebaseSimpleLogin, mitmeRef) {
+        .factory("auth", function ($firebaseSimpleLogin, mitmeRef) {
             var currentUser,
                 auth,
                 listeners,
