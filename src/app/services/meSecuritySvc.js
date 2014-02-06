@@ -75,17 +75,17 @@
                     // Let's check stuff
                     this.redirectIfNeeded(this.route.current);
                 }
-            } // else, login state is not known, so wait for it.
+            } // else, login state is not known, so wait for it.    
         },
         
         /**
          * Redirect the user based on his login status.
          * 
-         * If the user is not logged in and trying to access a restricted page, go to login.
-         * If he's logged in, and is trying to access the login page, go home.
-         * If he had been previously redirected to the login screen, and is now logged in,
-         * redirect him where he wanted to go in the first place.
-         * If the login status is unknow, we don't do anything.
+         * - If the user is not logged in and trying to access a restricted page, go to login.
+         * - If he's logged in, and is trying to access the login page, go home.
+         * - If he had been previously redirected to the login screen, and is now logged in,
+         *   redirect him where he wanted to go in the first place.
+         * - If the login status is unknow, we don't do anything.
          * 
          * @private
          * @method redirectIfNeeded
@@ -130,11 +130,13 @@
          * @param route {Route} the route we're going to
          */
         unauthenticatedRedirect: function (route) {
-            // Save wanted location for later, after login...
-            this.redirectTo = route.pathTo === this.loginPath ? this.defaultRedirect : route.pathTo;
-            
-            // ... and go to login page
-            this.goTo(this.loginPath);
+            if (route.requireAuth) {
+                // Save wanted location for later, after login...
+                this.redirectTo = route.pathTo === this.loginPath ? this.defaultRedirect : route.pathTo;
+                
+                // ... and go to login page
+                this.goTo(this.loginPath);
+            }
         },
         
         /**

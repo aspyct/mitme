@@ -9,7 +9,7 @@
                 .when("/", {
                     controller: "meHomeCtrl",
                     templateUrl: "app/pages/home/home.html", // TODO Specify this more easily?
-                    authRequired: true
+                    requireAuth: true
                 })
                 .when(loginPath, {
                     controller: "meLoginCtrl",
