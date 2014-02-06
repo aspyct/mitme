@@ -12,7 +12,7 @@
                 triggerAuthEvent,
                 userData;
             
-            currentUser = null;
+            currentUser = undefined;
             listeners = [];
             
             triggerAuthEvent = function () {
@@ -35,13 +35,22 @@
             });
             
             return {
+                /**
+                 * Is the user logged in?
+                 * Three state logic: true, false or undefined.
+                 * @return {Boolean} true if connected, false if not, undefined if we don't know
+                 */
                 loggedIn: function () {
-                    return currentUser !== null;
+                    if (currentUser !== undefined) {
+                        return currentUser !== null;
+                    } else {
+                        return undefined;
+                    }
                 },
                 currentUser: function () {
                     return currentUser;
                 },
-                login: function (success, failure) {
+                login: function () {
                     auth.login("facebook");
                 },
                 addAuthListener: function (listener) {

@@ -8,6 +8,7 @@
         "mitme.services.auth",
         "mitme.services.crypto",
         "mitme.services.objc",
-        "mitme.services.assert"
+        "mitme.services.assert",
+        "mitme.services.security"
     ]);
 }());

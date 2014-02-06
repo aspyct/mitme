@@ -3,11 +3,11 @@
 (function () {
     "use strict";
     
-    var firebaseUrl = "https://mitme.firebaseio.com/";
-    
     angular
         .module("mitme.services.firebase", ["firebase"])
-        .value("mitmeRef", new Firebase(firebaseUrl))
+        .factory("mitmeRef", function (firebaseUrl) {
+            return new Firebase(firebaseUrl);
+        })
         .factory("$mitme", function ($firebase, mitmeRef) {
             return $firebase(mitmeRef);
         });
