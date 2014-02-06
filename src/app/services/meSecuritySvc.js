@@ -7,12 +7,29 @@
     
     var SecurityManager;
     
+    /**
+     * # Login security manager
+     * 
+     * Ensures that user is connected to access "restricted" pages.
+     * 
+     * @module mitme.service.security
+     */
     angular.module("mitme.services.security", ["mitme.services.auth"])
         .run(function ($route, $location, $rootScope, loginPath, auth) {
             new SecurityManager($route, $location, $rootScope, loginPath, auth)
                 .install();
         });
     
+    /**
+     * This class is responsible for redirecting the user to the login page
+     * when he's trying to access a restricted page.
+     * Or to redirect him to home (or the originally requested page) when he
+     * is logged in.
+     * 
+     * There may be only one security manager per application.
+     * 
+     * @class SecurityManager
+     */
     SecurityManager = function ($route, $location, $rootScope, loginPath, auth) {
         this.route = $route;
         this.location = $location;
@@ -20,9 +37,16 @@
         this.loginPath = loginPath;
         this.auth = auth;
         this.redirectTo = null;
+        this.defaultRedirect = "/";
     };
     
     SecurityManager.prototype = {
+        /**
+         * Tell this security manager to start watching login status
+         * and route changes.
+         * 
+         * @method install
+         */
         install: function () {
             var self = this;
             
@@ -34,6 +58,11 @@
                 self.checkCurrent();
             });
         },
+        
+        /**
+         * @method checkCurrent
+         * @private
+         */
         checkCurrent: function () {
             if (this.auth.loggedIn() !== undefined) {
                 console.debug("User logged in? " + this.auth.loggedIn());
@@ -46,42 +75,95 @@
                     // Let's check stuff
                     this.redirectIfNeeded(this.route.current);
                 }
-            } else { // else, login state is not known, so wait for it.
-                console.debug("No info on login state");
-            }
+            } // else, login state is not known, so wait for it.
         },
+        
+        /**
+         * Redirect the user based on his login status.
+         * 
+         * If the user is not logged in and trying to access a restricted page, go to login.
+         * If he's logged in, and is trying to access the login page, go home.
+         * If he had been previously redirected to the login screen, and is now logged in,
+         * redirect him where he wanted to go in the first place.
+         * If the login status is unknow, we don't do anything.
+         * 
+         * @private
+         * @method redirectIfNeeded
+         * @param route {Route} the current route the user is taking
+         */
         redirectIfNeeded: function (route) {
             var pathTo;
             
             if (this.auth.loggedIn() !== undefined) {
-                // Find out where we're going
-                if (route.pathTo !== undefined) {
-                    // We're routing from within the app
-                    pathTo = route.pathTo;
-                } else {
-                    // The user drops on the website, with a direct url
-                    pathTo = this.location.path();
-                }
-                
                 if (this.auth.loggedIn() === true) {
-                    if (pathTo === this.loginPath) {
-                        // If we're logged in and on the login page, go home (you're drunk !)
-                        this.goTo("/");
-                    } // else, let it be
-                } else if (route.authRequired) {
-                    // Not logged in, and this route requires authentication
-                    // Save location for later (after successful login)...
-                    if (pathTo === undefined) {
-                        this.redirectTo = this.location.path();
-                    } else {
-                        this.redirectTo = route.pathTo === this.loginPath ? "/" : route.pathTo;
-                    }
-                    
-                    // ... and go to login page
-                    this.goTo(this.loginPath);
+                    this.authenticatedRedirect(route);
+                } else {
+                    this.unauthenticatedRedirect(route);
                 }
             }  // else we don't know the login state yet, so let things happen
         },
+        
+        /**
+         * Redirect an authenticated user.
+         * 
+         * If the user is trying to access the login page, go to the home page.
+         * 
+         * @private
+         * @method authenticatedRedirect
+         * @param route {Route} the route we're going to
+         */
+        authenticatedRedirect: function (route) {
+            if (this.destination(route) === this.loginPath) {
+                // A logged in user does not need to see login page. Go away
+                this.goTo(this.defaultRedirect);
+            } // else, let it be
+        },
+        
+        /**
+         * Redirect an unauthenticated user
+         * 
+         * If the route requires authentication, go to login.
+         * Otherwise, do nothing
+         * 
+         * @private
+         * @method unauthenticatedRedirect
+         * @param route {Route} the route we're going to
+         */
+        unauthenticatedRedirect: function (route) {
+            // Save wanted location for later, after login...
+            this.redirectTo = route.pathTo === this.loginPath ? this.defaultRedirect : route.pathTo;
+            
+            // ... and go to login page
+            this.goTo(this.loginPath);
+        },
+        
+        /**
+         * Returns the path destination of the user.
+         * 
+         * Figures out whether the user is dropping on the application with an absolute link,
+         * or is just navigating from one fragment to the other within the page.
+         * 
+         * @private
+         * @method pathTo
+         * @param route {Route} the route destination
+         * @return {String} the path that the user is trying to access
+         */
+        destination: function (route) {
+            if (route.pathTo !== undefined) {
+                return route.pathTo;
+            } else {
+                // User is dropping
+                return this.location.path();
+            }
+        },
+        
+        /**
+         * Redirect the user to a given location
+         * 
+         * @private
+         * @method goTo
+         * @param where {String} the URL to redirect the user to
+         */
         goTo: function (where) {
             this.location.replace();
             this.location.path(where);
