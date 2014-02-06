@@ -53,25 +53,34 @@
         redirectIfNeeded: function (route) {
             var pathTo;
             
-            if (route.pathTo !== undefined) {
-                pathTo = route.pathTo;
-            } else {
-                pathTo = this.location.path();
-            }
-            
-            if (this.auth.loggedIn() === true) {
-                if (pathTo === this.loginPath) {
-                    this.goTo("/");
-                }
-            } else if (this.auth.loggedIn === false && route.authRequired) {
-                if (pathTo === undefined) {
-                    this.redirectTo = this.location.path();
+            if (this.auth.loggedIn() !== undefined) {
+                // Find out where we're going
+                if (route.pathTo !== undefined) {
+                    // We're routing from within the app
+                    pathTo = route.pathTo;
                 } else {
-                    this.redirectTo = route.pathTo === this.loginPath ? "/" : route.pathTo;
+                    // The user drops on the website, with a direct url
+                    pathTo = this.location.path();
                 }
                 
-                this.goTo(this.loginPath);
-            } // else we don't know the login state yet, so let things happen
+                if (this.auth.loggedIn() === true) {
+                    if (pathTo === this.loginPath) {
+                        // If we're logged in and on the login page, go home (you're drunk !)
+                        this.goTo("/");
+                    } // else, let it be
+                } else if (route.authRequired) {
+                    // Not logged in, and this route requires authentication
+                    // Save location for later (after successful login)...
+                    if (pathTo === undefined) {
+                        this.redirectTo = this.location.path();
+                    } else {
+                        this.redirectTo = route.pathTo === this.loginPath ? "/" : route.pathTo;
+                    }
+                    
+                    // ... and go to login page
+                    this.goTo(this.loginPath);
+                }
+            }  // else we don't know the login state yet, so let things happen
         },
         goTo: function (where) {
             this.location.replace();
