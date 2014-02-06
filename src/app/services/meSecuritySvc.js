@@ -44,6 +44,19 @@
      * previously requested location.
      * 
      * @class SecurityManager
+     * @constructor
+     * @param $route {ngRoute}
+     * @param $location {ngLocation}
+     * @param $rootScope {ngScope}
+     * @param loginPath {String} path to the login screen
+     * @param auth {mitme.services.auth.Auth} the auth service
+     */
+    /**
+     * The default page to go to once the user is logged in.
+     * 
+     * @property defaultRedirect
+     * @type {String}
+     * @default "/"
      */
     SecurityManager = function ($route, $location, $rootScope, loginPath, auth) {
         this.route = $route;
