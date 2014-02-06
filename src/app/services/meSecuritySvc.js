@@ -44,19 +44,13 @@
      * previously requested location.
      * 
      * @class SecurityManager
+     * @since 0.1
      * @constructor
      * @param $route {ngRoute}
      * @param $location {ngLocation}
      * @param $rootScope {ngScope}
      * @param loginPath {String} path to the login screen
      * @param auth {mitme.services.auth.Auth} the auth service
-     */
-    /**
-     * The default page to go to once the user is logged in.
-     * 
-     * @property defaultRedirect
-     * @type {String}
-     * @default "/"
      */
     SecurityManager = function ($route, $location, $rootScope, loginPath, auth) {
         this.route = $route;
@@ -68,12 +62,21 @@
         this.defaultRedirect = "/";
     };
     
+    /**
+     * The default page to go to once the user is logged in.
+     * 
+     * @property defaultRedirect
+     * @type {String}
+     * @default "/"
+     * @since 0.1
+     */
     SecurityManager.prototype = {
         /**
          * Tell this security manager to start watching login status
          * and route changes.
          * 
          * @method install
+         * @since 0.1
          */
         install: function () {
             var self = this;
