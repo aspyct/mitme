@@ -51,15 +51,27 @@
             }
         },
         redirectIfNeeded: function (route) {
-            if (route.authRequired && this.auth.loggedIn() === false) {
-                if (route.pathTo === undefined) {
+            var pathTo;
+            
+            if (route.pathTo !== undefined) {
+                pathTo = route.pathTo;
+            } else {
+                pathTo = this.location.path();
+            }
+            
+            if (this.auth.loggedIn() === true) {
+                if (pathTo === this.loginPath) {
+                    this.goTo("/");
+                }
+            } else if (this.auth.loggedIn === false && route.authRequired) {
+                if (pathTo === undefined) {
                     this.redirectTo = this.location.path();
                 } else {
                     this.redirectTo = route.pathTo === this.loginPath ? "/" : route.pathTo;
                 }
                 
                 this.goTo(this.loginPath);
-            }
+            } // else we don't know the login state yet, so let things happen
         },
         goTo: function (where) {
             this.location.replace();
