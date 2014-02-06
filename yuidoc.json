@@ -1,0 +1,10 @@
+{
+    "name": "Mitme",
+    "description": "The privacy-aware location app",
+    "version": "0.1",
+    "url": "http://mitme.aspyct.org",
+    "options": {
+        "outdir": "./docs",
+        "paths": "./src/app"
+    }
+}
